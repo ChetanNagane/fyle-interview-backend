@@ -41,6 +41,25 @@ def test_post_assignment_student_1(client, h_student_1):
     assert data['state'] == 'DRAFT'
     assert data['teacher_id'] is None
 
+def test_edit_assignment_student_1(client, h_student_1):
+    content = 'ABCDE TESTPOST'
+
+    response = client.post(
+        '/student/assignments',
+        headers=h_student_1,
+        json={
+            'id': 6,
+            'content': content
+        })
+
+    assert response.status_code == 200
+
+    data = response.json['data']
+    assert data['id'] == 6
+    assert data['content'] == content
+    assert data['state'] == 'DRAFT'
+    assert data['teacher_id'] is None
+
 
 def test_submit_assignment_student_1(client, h_student_1):
     response = client.post(
@@ -71,3 +90,60 @@ def test_assingment_resubmitt_error(client, h_student_1):
     assert response.status_code == 400
     assert error_response['error'] == 'FyleError'
     assert error_response["message"] == 'only a draft assignment can be submitted'
+
+def test_assingment_submitt_without_auth(client, h_student_1):
+    response = client.post(
+        '/student/assignments/submit',
+        json={
+            'id': 2,
+            'teacher_id': 2
+        })
+    error_response = response.json
+    assert response.status_code == 401
+    assert error_response['error'] == 'FyleError'
+    assert error_response["message"] == 'principal not found'
+
+def test_get_assingment_without_auth(client, h_student_1):
+    response = client.get(
+        '/student/assignments',
+        json={
+            'id': 2,
+            'teacher_id': 2
+        })
+    error_response = response.json
+    assert response.status_code == 401
+    assert error_response['error'] == 'FyleError'
+    assert error_response["message"] == 'principal not found'
+
+def test_create_assingment_without_auth(client, h_student_1):
+    response = client.get(
+        '/student/assignments',
+        json={
+            'id': 2,
+            'teacher_id': 2
+        })
+    error_response = response.json
+    assert response.status_code == 401
+    assert error_response['error'] == 'FyleError'
+    assert error_response["message"] == 'principal not found'
+
+
+def test_assingment_submitt_without_payload(client, h_student_1):
+    response = client.post(
+        '/student/assignments/submit',
+        headers=h_student_1,
+        )
+    error_response = response.json
+    assert response.status_code == 400
+    assert error_response['error'] == 'ValidationError'
+
+def test_assingment_submitt_with_bad_payload(client, h_student_1):
+    response = client.post(
+        '/student/assignments/submit',
+        headers=h_student_1,
+        json={
+            'id': 2,
+        })
+    error_response = response.json
+    assert response.status_code == 400
+    assert error_response['error'] == 'ValidationError'

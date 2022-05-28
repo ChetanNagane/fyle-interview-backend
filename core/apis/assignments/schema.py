@@ -36,3 +36,16 @@ class AssignmentSubmitSchema(Schema):
     def initiate_class(self, data_dict, many, partial):
         # pylint: disable=unused-argument,no-self-use
         return GeneralObject(**data_dict)
+
+class AssignmentGradeSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Assignment
+        unknown = EXCLUDE
+
+    id = fields.Integer(required=True, allow_none=False)
+    grade = auto_field(required=True, allow_none=False)
+    
+
+    @post_load
+    def initiate_class(self, data_dict, many, partial):
+        return GeneralObject(**data_dict)

@@ -100,3 +100,20 @@ def test_grade_assignment_draft_assignment(client, h_teacher_1):
     data = response.json
 
     assert data['error'] == 'FyleError'
+
+# def test_grade_assignment_without_auth(client, h_teacher_1):
+#     """
+#     failure case: only a submitted assignment can be graded
+#     """
+#     response = client.post(
+#         '/teacher/assignments/grade',
+#         json={
+#             "id": 2,
+#             "grade": "A"
+#         }
+#     )
+
+#     assert response.status_code == 401
+#     data = response.json
+
+#     assert data['error'] == 'FyleError'
